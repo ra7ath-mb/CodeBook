@@ -3,11 +3,15 @@ import { useParams } from "react-router-dom";
 import Rating from "../components/Elements/Rating";
 import useTitle from "../hooks/useTitle";
 import { useCart } from "../context";
+import { getProduct } from "../services";
+import { toast } from "react-toastify";
 
 const ProductDetails = () => {
   const { addToCart, removeFromCart, cartList } = useCart();
   const [product, setProduct] = useState(null);
   const [inCart, setInCart] = useState(false);
+
+  const [errorMessage, setErrorMessage] = useState("");
   const { id } = useParams();
   const [error, setError] = useState("");
 
@@ -16,18 +20,18 @@ const ProductDetails = () => {
   useEffect(() => {
     async function fetchProduct() {
       try {
-        const response = await fetch(`http://localhost:8000/products/${id}`);
-
-        if (!response.ok) {
-          throw new Error(`Product not found (${response.status})`);
-        }
-
-        const data = await response.json();
+        const data = await getProduct(id);
         setProduct(data);
         setError("");
       } catch (error) {
-        console.error("Error fetching product:", error);
-        setError("Product details are not available right now.");
+        const message = error.message || "Product unavailable";
+        setError(message);
+        setErrorMessage(message);
+        toast.error(message, {
+          CloseButton: true,
+          closeOnClick: true,
+          position: "bottom-center",
+        });
       }
     }
     fetchProduct();
@@ -51,7 +55,7 @@ const ProductDetails = () => {
             Product unavailable
           </h1>
           <p className="mt-3 text-lg text-gray-900 dark:text-slate-200">
-            {error}
+            {errorMessage}
           </p>
         </section>
       </main>
@@ -122,8 +126,8 @@ const ProductDetails = () => {
               ) : (
                 <button
                   onClick={() => addToCart(product)}
-                  className={`inline-flex items-center py-2 px-5 text-lg font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 ${product.in_stock ? "" : 'cursor-not-allowed'}`}
-                  disabled = {product.in_stock ? "" :"disabled" }
+                  className={`inline-flex items-center py-2 px-5 text-lg font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 ${product.in_stock ? "" : "cursor-not-allowed"}`}
+                  disabled={product.in_stock ? "" : "disabled"}
                 >
                   Add To Cart <i className="ml-1 bi bi-plus-lg"></i>
                 </button>

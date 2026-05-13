@@ -4,6 +4,8 @@ import FilterBar from "../Products/components/FilterBar";
 import { useLocation } from "react-router-dom";
 import { useFilter } from "../../context";
 import useTitle from "../../hooks/useTitle";
+import {getProductList} from '../../services';
+import {toast} from 'react-toastify'
 
 const ProductsList = () => {
   const [show, setShow] = useState(false);
@@ -12,19 +14,23 @@ const ProductsList = () => {
 
   useTitle("Products");
   const { products, initialProductList } = useFilter();
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     // Fetch products from API and setProducts
     async function fetchProducts() {
-      try {
-        const response = await fetch(
-          `http://localhost:8000/products?name_like=${searchTerm ? searchTerm : ""}`,
-        );
-        const data = await response.json();
+      try{
+      const data = await getProductList({searchTerm})
         initialProductList(data);
-      } catch (error) {
-        console.error("Error fetching products:", error);
+      } catch(error) {
+        const message = error.message || "Unable to load products";
+        setErrorMessage(message)
+        toast.error(message, {
+          CloseButton:true, 
+          closeOnClick: true,
+          position:"bottom-center"})
       }
+
     }
     fetchProducts();
   }, [searchTerm, initialProductList]);
@@ -60,6 +66,7 @@ const ProductsList = () => {
         </div>
 
         <div className="flex flex-wrap justify-center lg:flex-row">
+          {errorMessage}
           {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}

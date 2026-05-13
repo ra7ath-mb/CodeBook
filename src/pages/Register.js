@@ -1,9 +1,13 @@
 import React from 'react'
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { register } from '../services';
+import useTitle from '../hooks/useTitle';
 
 const Register = () => {
   const navigate = useNavigate();
+
+  useTitle("Register")
 
   async function handleRegister(event){
     event.preventDefault();
@@ -13,19 +17,17 @@ const Register = () => {
       email: form.email.value,
       password: form.password.value
     }
-    const requestOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(authDetails)
-    };
 
-    const response = await fetch('http://localhost:8000/register', requestOptions);
-    const data = await response.json();
-    if (data.accessToken) {
-      toast.success('Registration successful!');
-      navigate("/products");
-    } else {
-      toast.error('Registration failed! Email already exists.');
+    try {
+      const data = await register(authDetails);
+
+      if(data.accessToken){
+        navigate("/products");
+      }else{
+        toast.error(data.error || "Registration failed")
+      }
+    } catch (error) {
+      toast.error(error.message || "Registration failed")
     }
   }
 

@@ -18,6 +18,7 @@
   "scripts": {
     "start": "react-scripts start",
     "server": "json-server --watch data/db.json -m ./node_modules/json-server-auth --port 8000 --host 127.0.0.1",
+    "routeserver": "json-server --watch data/db.json -m ./node_modules/json-server-auth -r data/routes.json --port 8000 --host 127.0.0.1",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
