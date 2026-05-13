@@ -13,7 +13,7 @@ root.render(
   <React.StrictMode>
     <CartProvider>
       <FilterProvider>
-        <BrowserRouter>
+        <BrowserRouter future={{ v7_relativeSplatPath: true }}>
           <ScrollToTop />
           <ToastContainer closeButton={false} autoClose={5000} position="bottom-right"/>
           <App />
