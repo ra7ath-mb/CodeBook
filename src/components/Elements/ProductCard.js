@@ -6,7 +6,7 @@ import { useCart } from "../../context";
 const ProductCard = ({ product }) => {
   const { addToCart, cartList, removeFromCart } = useCart();
   const [inCart, setInCart] = useState(false);
-  const { id, name, overview, price, image_local, rating, best_seller } =
+  const { id, name, overview, price, poster, rating, best_seller } =
     product;
 
   useEffect(() => {
@@ -28,7 +28,7 @@ const ProductCard = ({ product }) => {
         )}
         <img
           className="rounded-t-lg w-full h-64"
-          src={image_local}
+          src={poster}
           alt={name}
         />
       </Link>
